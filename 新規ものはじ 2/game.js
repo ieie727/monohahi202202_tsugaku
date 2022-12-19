@@ -6,12 +6,17 @@ const h = canvas.height;
 
 
 //答えとなる猫の数の設定とカウントの準備
-const result = 3;
+const result = getRandomNumber(1,5);
 let count = 0;
 
 
 //動物の設定（X座標、Y座標、種類）
-
+let animal = new Image();
+let animalType = '';
+setAnimalType();
+console.log(animalType);
+let animalX = getRandomNumber(500,w);
+let animalY = getRandomNumber(0,h);
 
 
 //こたつの画像を用意
@@ -23,11 +28,11 @@ kotatsu.src = "image/kotatsu.png";
 const startButton = document.getElementById('start');
 let id;
 let flag = false;
-//kotatsu.onload = () => ctx.drawImage(kotatsu, 0, 200, 400, 200);
+kotatsu.onload = () => ctx.drawImage(kotatsu, 0, 200, 400, 200);
 startButton.addEventListener('click', () => {
     if(flag === false){
         //ゲーム開始の処理
-        id = setInterval(draw, 10);
+        id = setInterval(draw,10);
         startButton.textContent = "もう１度";
         flag = true;
     }else{
@@ -44,30 +49,37 @@ function draw(){
     ctx.fillRect(0, 0, w, h);
 
     //当たり範囲の描画
-    
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(150, 270, 100, 60);
 
     //動物の描画・移動
-    
+    ctx.drawImage(animal, animalX, animalY, 60, 60);
+    moveAnimal();
 
     //こたつの描画
-    
+    ctx.drawImage(kotatsu, 0, 200, 400, 200);
 
 
     //動物が当たり範囲内に入った時の処理
     if(150 <= animalX  &&  animalX <= 250  &&  270 <= animalY  &&  animalY <= 330 ){
         //猫の場合はカウントを増やす
-        
+        if(animalType === "cat"){
+            count++;
+        }
 
         //猫の数が正解数に達するまで出現させて、答えまで達すると答え合わせの処理をする
- 
+        if(count < result){
             //動物の種類・位置の再設定
-            
- 
+            setAnimalType();
+            console.log(animalType);
+            animalX = getRandomNumber(500,w);
+            animalY = getRandomNumber(0,h);
+        }else{
             //正解発表をしてゲームを終了する
-            
+            showCorrectAnswer();
             clearInterval(id);
             return;
-        
+        }
     }
 }
 
@@ -81,7 +93,7 @@ function getRandomNumber(min,max){
 
 //乱数によって猫か虎かを決定する(画像の読み込みも行う)
 function setAnimalType(){
-    const randomNumber = getRandomNumber(0, 1);
+    const randomNumber = getRandomNumber(0,1);
     if(randomNumber === 0){
         animal.src = "image/cat.png";
         animalType = "cat";
